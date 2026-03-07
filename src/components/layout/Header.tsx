@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Directory", href: "/directory" },
   { label: "Events", href: "/events" },
+  { label: "Classifieds", href: "/classifieds" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ]
@@ -63,9 +64,11 @@ function Header() {
           <Button variant="outline" size="sm">
             Sign In
           </Button>
-          <Button variant="primary" size="sm">
-            List Your Business
-          </Button>
+          <Link to="/submit-business">
+            <Button variant="primary" size="sm">
+              List Your Business
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -101,9 +104,11 @@ function Header() {
               <Button variant="outline" size="md" className="w-full">
                 Sign In
               </Button>
-              <Button variant="primary" size="md" className="w-full">
-                List Your Business
-              </Button>
+              <Link to="/submit-business" onClick={() => setMobileOpen(false)}>
+                <Button variant="primary" size="md" className="w-full">
+                  List Your Business
+                </Button>
+              </Link>
             </div>
           </nav>
         </div>
