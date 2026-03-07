@@ -6,12 +6,14 @@ const footerLinks = {
     { label: "Business Directory", href: "/directory" },
     { label: "Events", href: "/events" },
     { label: "Classifieds", href: "/classifieds" },
-    { label: "Featured Districts", href: "/directory" },
+    { label: "Prayer Times", href: "/prayer-times" },
+    { label: "Halal Checker", href: "/halal-checker" },
   ],
   company: [
     { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
     { label: "List Your Business", href: "/submit-business" },
+    { label: "Sign Up Free", href: "/sign-up" },
   ],
   legal: [
     { label: "Privacy Policy", href: "/privacy" },
@@ -30,16 +32,8 @@ function Footer() {
           <div className="sm:col-span-2 lg:col-span-1">
             <Link to="/" className="inline-flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <path
-                    d="M10 1L12.5 7.5L19 10L12.5 12.5L10 19L7.5 12.5L1 10L7.5 7.5L10 1Z"
-                    fill="white"
-                  />
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 1L12.5 7.5L19 10L12.5 12.5L10 19L7.5 12.5L1 10L7.5 7.5L10 1Z" fill="white" />
                 </svg>
               </div>
               <span className="font-display text-lg font-bold text-white">
@@ -47,9 +41,23 @@ function Footer() {
               </span>
             </Link>
             <p className="mt-3 text-body-sm text-neutral-400">
-              Connecting Singapore's Muslim community with halal-certified
-              businesses and events.
+              Connecting Singapore's Muslim community with halal-certified businesses,
+              events, and essential tools.
             </p>
+            <div className="mt-4 flex gap-3">
+              <Link
+                to="/sign-up"
+                className="rounded-lg bg-primary-600 px-3 py-1.5 text-caption font-semibold text-white transition-colors hover:bg-primary-500"
+              >
+                Join Free
+              </Link>
+              <Link
+                to="/submit-business"
+                className="rounded-lg border border-neutral-700 px-3 py-1.5 text-caption font-semibold text-neutral-300 transition-colors hover:border-neutral-500"
+              >
+                List Business
+              </Link>
+            </div>
           </div>
 
           {/* Explore */}
@@ -113,8 +121,7 @@ function Footer() {
         {/* Bottom */}
         <div className="mt-10 border-t border-neutral-800 pt-6 text-center">
           <p className="text-caption text-neutral-500">
-            &copy; {new Date().getFullYear()} HumbleHalal. All rights reserved.
-            Made with care in Singapore.
+            &copy; {new Date().getFullYear()} HumbleHalal. All rights reserved. Made with care in Singapore.
           </p>
         </div>
       </div>
