@@ -17,6 +17,9 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
           ref={ref}
           type="search"
           className="flex h-14 w-full rounded-2xl border border-neutral-200 bg-white pl-12 pr-4 py-2 text-body text-neutral-900 shadow-md placeholder:text-neutral-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all"
+          onChange={(e) => {
+            if (onSearch) onSearch(e.currentTarget.value)
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && onSearch) {
               onSearch(e.currentTarget.value)

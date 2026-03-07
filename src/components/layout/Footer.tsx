@@ -5,6 +5,7 @@ const footerLinks = {
   explore: [
     { label: "Business Directory", href: "/directory" },
     { label: "Events", href: "/events" },
+    { label: "Classifieds", href: "/classifieds" },
     { label: "Featured Districts", href: "/directory" },
   ],
   company: [
