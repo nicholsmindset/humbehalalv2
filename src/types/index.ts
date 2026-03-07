@@ -65,6 +65,35 @@ export interface User {
   email: string
   name: string
   role: "user" | "business-owner" | "admin"
+  avatar?: string
+  phone?: string
+  location?: string
+  bio?: string
+  joinedDate?: string
+}
+
+export interface Review {
+  id: string
+  businessId: string
+  userId: string
+  userName: string
+  rating: number
+  comment: string
+  createdAt: string
+  reply?: string
+}
+
+export interface Campaign {
+  id: string
+  businessId: string
+  type: "featured" | "spotlight" | "campaign-boost" | "social"
+  status: "active" | "paused" | "ended" | "draft"
+  startDate: string
+  endDate: string
+  budget: number
+  spent: number
+  views: number
+  clicks: number
 }
 
 export const DISTRICT_LABELS: Record<District, string> = {

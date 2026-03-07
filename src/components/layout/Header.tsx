@@ -61,6 +61,11 @@ function Header() {
 
         {/* Desktop Actions */}
         <div className="hidden items-center gap-3 md:flex">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm">
+              Dashboard
+            </Button>
+          </Link>
           <Button variant="outline" size="sm">
             Sign In
           </Button>
@@ -101,6 +106,11 @@ function Header() {
               </Link>
             ))}
             <div className="mt-3 flex flex-col gap-2 border-t border-neutral-100 pt-3">
+              <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
+                <Button variant="ghost" size="md" className="w-full">
+                  Dashboard
+                </Button>
+              </Link>
               <Button variant="outline" size="md" className="w-full">
                 Sign In
               </Button>
