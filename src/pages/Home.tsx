@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import {
   MapPin,
   Calendar,
@@ -16,6 +17,7 @@ import {
 import { Button, Card, CardContent, Badge, SearchBar, Rating, HalalBadge } from "@/components/ui"
 import { GeometricPattern, SectionDivider } from "@/components/decorative"
 import { DISTRICT_LABELS, type District } from "@/types"
+import { useToast } from "@/context/ToastContext"
 
 const districts: { id: District; image: string }[] = [
   { id: "geylang-serai", image: "" },
@@ -27,13 +29,13 @@ const districts: { id: District; image: string }[] = [
 ]
 
 const categories = [
-  { label: "Restaurants", icon: Utensils, count: 245 },
-  { label: "Cafes", icon: Coffee, count: 128 },
-  { label: "Groceries", icon: ShoppingBag, count: 89 },
-  { label: "Services", icon: Briefcase, count: 67 },
-  { label: "Catering", icon: ChefHat, count: 34 },
-  { label: "Bakeries", icon: CakeSlice, count: 56 },
-  { label: "Food Stalls", icon: Store, count: 312 },
+  { label: "Restaurants", icon: Utensils, count: 245, value: "restaurants" },
+  { label: "Cafes", icon: Coffee, count: 128, value: "cafes" },
+  { label: "Groceries", icon: ShoppingBag, count: 89, value: "groceries" },
+  { label: "Services", icon: Briefcase, count: 67, value: "services" },
+  { label: "Catering", icon: ChefHat, count: 34, value: "catering" },
+  { label: "Bakeries", icon: CakeSlice, count: 56, value: "bakeries" },
+  { label: "Food Stalls", icon: Store, count: 312, value: "food-stalls" },
 ]
 
 const featuredBusinesses = [
@@ -81,7 +83,7 @@ const upcomingEvents = [
   {
     id: "2",
     title: "Islamic Finance Webinar",
-    date: "Feb 15, 2026",
+    date: "Mar 15, 2026",
     location: "Online",
     category: "Business",
     eventType: "virtual" as const,
@@ -103,7 +105,31 @@ const stats = [
   { label: "Districts Covered", value: "15+", icon: MapPin },
 ]
 
+const quickTags = ["Nasi Padang", "Biryani", "Halal BBQ", "Murtabak"]
+
 function Home() {
+  const navigate = useNavigate()
+  const { success } = useToast()
+  const [email, setEmail] = useState("")
+
+  function handleHeroSearch(query: string) {
+    if (query.trim()) {
+      navigate(`/directory?q=${encodeURIComponent(query.trim())}`)
+    }
+  }
+
+  function handleTagClick(tag: string) {
+    navigate(`/directory?q=${encodeURIComponent(tag)}`)
+  }
+
+  function handleSubscribe() {
+    if (!email.trim() || !email.includes("@")) {
+      return
+    }
+    success("You're subscribed! Welcome to the HumbleHalal community.")
+    setEmail("")
+  }
+
   return (
     <div>
       {/* ── Hero Section ── */}
@@ -121,16 +147,20 @@ function Home() {
             halal-certified businesses, restaurants, and community events.
           </p>
           <div className="mt-8 w-full max-w-2xl">
-            <SearchBar placeholder="Search halal restaurants, cafes, services..." />
+            <SearchBar
+              placeholder="Search halal restaurants, cafes, services..."
+              onSearch={handleHeroSearch}
+            />
           </div>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
-            {["Nasi Padang", "Biryani", "Halal BBQ", "Murtabak"].map((tag) => (
-              <span
+            {quickTags.map((tag) => (
+              <button
                 key={tag}
-                className="cursor-pointer rounded-full bg-white/10 px-3 py-1 text-body-sm text-white/80 transition-colors hover:bg-white/20"
+                onClick={() => handleTagClick(tag)}
+                className="cursor-pointer rounded-full bg-white/10 px-3 py-1 text-body-sm text-white/80 transition-colors hover:bg-white/20 hover:text-white"
               >
                 {tag}
-              </span>
+              </button>
             ))}
           </div>
         </div>
@@ -166,7 +196,7 @@ function Home() {
             {categories.map((cat) => (
               <Link
                 key={cat.label}
-                to={`/directory?category=${cat.label.toLowerCase()}`}
+                to={`/directory?category=${cat.value}`}
                 className="group flex flex-col items-center gap-2 rounded-xl border border-neutral-200 bg-white p-4 text-center transition-all hover:border-primary-300 hover:shadow-md"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-500 transition-colors group-hover:bg-primary-100">
@@ -247,29 +277,31 @@ function Home() {
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featuredBusinesses.map((biz) => (
-              <Card key={biz.id} className="relative overflow-hidden">
-                <GeometricPattern variant="card" />
-                <div className="aspect-video bg-gradient-to-br from-primary-100 to-primary-50" />
-                <CardContent className="relative">
-                  <div className="mb-2 flex items-center justify-between">
-                    <Badge variant="primary" size="sm">{biz.category}</Badge>
-                    <HalalBadge status={biz.halalStatus} size="sm" />
-                  </div>
-                  <h3 className="font-display text-h4 font-semibold text-neutral-900">{biz.name}</h3>
-                  <div className="mt-1 flex items-center gap-2 text-body-sm text-neutral-500">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {biz.district}
-                    <span className="text-neutral-300">|</span>
-                    {biz.priceRange}
-                  </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <Rating value={biz.rating} size="sm" />
-                    <span className="text-caption text-neutral-400">
-                      {biz.reviewCount} reviews
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+              <Link key={biz.id} to={`/directory/${biz.id}`} className="block group">
+                <Card className="relative overflow-hidden transition-all hover:shadow-lg h-full">
+                  <GeometricPattern variant="card" />
+                  <div className="aspect-video bg-gradient-to-br from-primary-100 to-primary-50" />
+                  <CardContent className="relative">
+                    <div className="mb-2 flex items-center justify-between">
+                      <Badge variant="primary" size="sm">{biz.category}</Badge>
+                      <HalalBadge status={biz.halalStatus} size="sm" />
+                    </div>
+                    <h3 className="font-display text-h4 font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">{biz.name}</h3>
+                    <div className="mt-1 flex items-center gap-2 text-body-sm text-neutral-500">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {biz.district}
+                      <span className="text-neutral-300">|</span>
+                      {biz.priceRange}
+                    </div>
+                    <div className="mt-3 flex items-center justify-between">
+                      <Rating value={biz.rating} size="sm" />
+                      <span className="text-caption text-neutral-400">
+                        {biz.reviewCount} reviews
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
@@ -296,30 +328,32 @@ function Home() {
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {upcomingEvents.map((event) => (
-              <Card key={event.id}>
-                <CardContent className="flex gap-4">
-                  <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-lg bg-primary-50 text-primary-600">
-                    <Calendar className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="mb-1 flex items-center gap-2">
-                      <Badge
-                        variant={event.eventType === "virtual" ? "info" : "primary"}
-                        size="sm"
-                      >
-                        {event.eventType === "virtual" ? "Virtual" : "In-Person"}
-                      </Badge>
-                      <Badge variant="default" size="sm">{event.category}</Badge>
+              <Link key={event.id} to={`/events/${event.id}`} className="block group">
+                <Card className="transition-all hover:shadow-lg h-full">
+                  <CardContent className="flex gap-4">
+                    <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-lg bg-primary-50 text-primary-600">
+                      <Calendar className="h-5 w-5" />
                     </div>
-                    <h3 className="font-display text-body font-semibold text-neutral-900">
-                      {event.title}
-                    </h3>
-                    <p className="mt-1 text-body-sm text-neutral-500">
-                      {event.date} &middot; {event.location}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="min-w-0">
+                      <div className="mb-1 flex items-center gap-2">
+                        <Badge
+                          variant={event.eventType === "virtual" ? "info" : "primary"}
+                          size="sm"
+                        >
+                          {event.eventType === "virtual" ? "Virtual" : "In-Person"}
+                        </Badge>
+                        <Badge variant="default" size="sm">{event.category}</Badge>
+                      </div>
+                      <h3 className="font-display text-body font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">
+                        {event.title}
+                      </h3>
+                      <p className="mt-1 text-body-sm text-neutral-500">
+                        {event.date} &middot; {event.location}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
@@ -337,10 +371,13 @@ function Home() {
           <div className="mx-auto mt-8 flex max-w-md gap-3">
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
               placeholder="Enter your email"
               className="flex-1 rounded-xl border-0 bg-white/10 px-4 py-3 text-body text-white placeholder:text-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/30"
             />
-            <Button variant="accent" size="lg">
+            <Button variant="accent" size="lg" onClick={handleSubscribe}>
               Subscribe
             </Button>
           </div>
