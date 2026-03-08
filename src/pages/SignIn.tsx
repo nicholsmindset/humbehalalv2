@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react"
 import { Button, Input } from "@/components/ui"
 import { GeometricPattern } from "@/components/decorative"
 import { useAuth } from "@/context/AuthContext"
+import { useToast } from "@/context/ToastContext"
 
 const DEMO_ACCOUNTS = [
   { label: "Admin", email: "admin@humblehalal.sg", password: "admin123", color: "bg-purple-100 text-purple-700 border-purple-200" },
@@ -15,6 +16,7 @@ function SignIn() {
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const { info } = useToast()
   const from = (location.state as { from?: string })?.from ?? "/dashboard"
 
   const [email, setEmail] = useState("")
@@ -107,9 +109,13 @@ function SignIn() {
               <div>
                 <div className="mb-1.5 flex items-center justify-between">
                   <label className="text-body-sm font-medium text-neutral-700">Password</label>
-                  <a href="#" className="text-caption text-primary-600 hover:underline">
+                  <button
+                    type="button"
+                    onClick={() => info("Password reset is not available for demo accounts.")}
+                    className="text-caption text-primary-600 hover:underline"
+                  >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
                 <div className="relative">
                   <Input

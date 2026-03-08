@@ -1,8 +1,9 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { User, Mail, Phone, MapPin, Shield, Bell, Heart, Clock, LogOut, CheckCircle, Store } from "lucide-react"
 import { Button, Input, Badge, Card, CardContent, HalalBadge, Rating } from "@/components/ui"
 import { useSaved } from "@/hooks/useSaved"
+import { useAuth } from "@/context/AuthContext"
 import { BUSINESSES } from "@/data/businesses"
 import { CATEGORY_LABELS, DISTRICT_LABELS } from "@/types"
 
@@ -17,6 +18,8 @@ const activityLog = [
 ]
 
 function UserProfile() {
+  const navigate = useNavigate()
+  const { signOut } = useAuth()
   const [activeTab, setActiveTab] = useState<ProfileTab>("account")
   const [saved, setSaved] = useState(false)
   const { savedIds, remove: removeSaved } = useSaved()
@@ -144,6 +147,7 @@ function UserProfile() {
           <div className="flex items-center justify-between pt-2">
             <button
               type="button"
+              onClick={() => { signOut(); navigate("/") }}
               className="flex items-center gap-2 text-body-sm text-red-500 hover:text-red-600"
             >
               <LogOut className="h-4 w-4" />
