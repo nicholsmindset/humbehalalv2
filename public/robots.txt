@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Keep dashboard and auth routes out of search index
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /sign-in
+Disallow: /sign-up
+
+Sitemap: https://humblehalal.sg/sitemap.xml
