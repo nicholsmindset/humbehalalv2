@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react"
 import { Link, useSearchParams } from "react-router-dom"
-import { MapPin, Phone, Globe, Clock, Star } from "lucide-react"
+import { MapPin, Phone, Globe, Clock, Star, Heart } from "lucide-react"
+import { useSaved } from "@/hooks/useSaved"
 import { SearchBar, Badge, Card, CardContent, HalalBadge, Rating, Button } from "@/components/ui"
 import { SectionDivider } from "@/components/decorative"
 import { GeometricPattern } from "@/components/decorative"
@@ -37,11 +38,22 @@ function priceRangeLabel(range: number) {
 }
 
 function BusinessCard({ biz }: { biz: Business }) {
+  const { isSaved, toggle } = useSaved()
+  const saved = isSaved(biz.id)
+
   return (
     <Link to={`/directory/${biz.id}`} className="block group">
       <Card className="relative overflow-hidden transition-all hover:shadow-lg h-full">
         <GeometricPattern variant="card" />
-        <div className="aspect-video bg-gradient-to-br from-primary-100 to-primary-50" />
+        <div className="relative aspect-video bg-gradient-to-br from-primary-100 to-primary-50">
+          <button
+            onClick={(e) => { e.preventDefault(); toggle(biz.id) }}
+            aria-label={saved ? "Unsave" : "Save"}
+            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow backdrop-blur-sm transition-all hover:scale-110"
+          >
+            <Heart className={`h-4 w-4 transition-colors ${saved ? "fill-red-500 text-red-500" : "text-neutral-400"}`} />
+          </button>
+        </div>
         <CardContent className="relative">
           <div className="mb-2 flex items-start justify-between gap-2">
             <Badge variant="primary" size="sm">

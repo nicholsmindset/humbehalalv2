@@ -1,15 +1,12 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { User, Mail, Phone, MapPin, Shield, Bell, Heart, Clock, LogOut, CheckCircle, Store } from "lucide-react"
 import { Button, Input, Badge, Card, CardContent, HalalBadge, Rating } from "@/components/ui"
+import { useSaved } from "@/hooks/useSaved"
+import { BUSINESSES } from "@/data/businesses"
+import { CATEGORY_LABELS, DISTRICT_LABELS } from "@/types"
 
 type ProfileTab = "account" | "saved" | "activity" | "notifications" | "security"
-
-const savedBusinesses = [
-  { id: "1", name: "Warung Nasi Padang", category: "Restaurants", district: "Geylang Serai", rating: 4.8, reviewCount: 234, halalStatus: "certified" as const },
-  { id: "2", name: "Kampong Glam Cafe", category: "Cafes", district: "Kampong Glam", rating: 4.6, reviewCount: 189, halalStatus: "certified" as const },
-  { id: "3", name: "Bismillah Biryani", category: "Restaurants", district: "Woodlands", rating: 4.9, reviewCount: 312, halalStatus: "certified" as const },
-  { id: "4", name: "Masjid Sultan Bakehouse", category: "Bakeries", district: "Kampong Glam", rating: 4.7, reviewCount: 203, halalStatus: "certified" as const },
-]
 
 const activityLog = [
   { id: "1", action: "Viewed listing", target: "Warung Nasi Padang", time: "2 hours ago", icon: Store },
@@ -22,6 +19,8 @@ const activityLog = [
 function UserProfile() {
   const [activeTab, setActiveTab] = useState<ProfileTab>("account")
   const [saved, setSaved] = useState(false)
+  const { savedIds, remove: removeSaved } = useSaved()
+  const savedBusinesses = BUSINESSES.filter((b) => savedIds.includes(b.id))
   const [form, setForm] = useState({
     name: "Ahmad Fauzi",
     email: "ahmad@email.sg",
@@ -158,29 +157,57 @@ function UserProfile() {
       {/* ── Saved Businesses ── */}
       {activeTab === "saved" && (
         <div className="space-y-4">
-          <p className="text-body-sm text-neutral-500">{savedBusinesses.length} saved businesses</p>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {savedBusinesses.map((biz) => (
-              <Card key={biz.id} className="relative group overflow-hidden">
-                <div className="aspect-video bg-gradient-to-br from-primary-100 to-primary-50" />
-                <CardContent>
-                  <div className="mb-2 flex items-center justify-between">
-                    <Badge variant="primary" size="sm">{biz.category}</Badge>
-                    <HalalBadge status={biz.halalStatus} size="sm" />
-                  </div>
-                  <h3 className="font-display text-h4 font-semibold text-neutral-900">{biz.name}</h3>
-                  <div className="mt-1 flex items-center gap-1 text-body-sm text-neutral-400">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {biz.district}
-                  </div>
-                  <div className="mt-2 flex items-center justify-between">
-                    <Rating value={biz.rating} size="sm" />
-                    <button className="text-caption text-red-400 hover:text-red-500">Remove</button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <p className="text-body-sm text-neutral-500">
+            {savedBusinesses.length === 0
+              ? "No saved businesses yet."
+              : `${savedBusinesses.length} saved ${savedBusinesses.length === 1 ? "business" : "businesses"}`}
+          </p>
+          {savedBusinesses.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <Heart className="mx-auto mb-3 h-10 w-10 text-neutral-200" />
+                <p className="font-medium text-neutral-700">Nothing saved yet</p>
+                <p className="mt-1 text-body-sm text-neutral-400">
+                  Hit the heart icon on any business to save it here.
+                </p>
+                <Link to="/directory">
+                  <Button variant="primary" size="sm" className="mt-4">Browse Directory</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {savedBusinesses.map((biz) => (
+                <Card key={biz.id} className="relative group overflow-hidden">
+                  <Link to={`/directory/${biz.id}`}>
+                    <div className="aspect-video bg-gradient-to-br from-primary-100 to-primary-50" />
+                  </Link>
+                  <CardContent>
+                    <div className="mb-2 flex items-center justify-between">
+                      <Badge variant="primary" size="sm">{CATEGORY_LABELS[biz.category]}</Badge>
+                      <HalalBadge status={biz.halalStatus} size="sm" />
+                    </div>
+                    <Link to={`/directory/${biz.id}`}>
+                      <h3 className="font-display text-h4 font-semibold text-neutral-900 hover:text-primary-600 transition-colors">{biz.name}</h3>
+                    </Link>
+                    <div className="mt-1 flex items-center gap-1 text-body-sm text-neutral-400">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {DISTRICT_LABELS[biz.district]}
+                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                      <Rating value={biz.rating} size="sm" />
+                      <button
+                        onClick={() => removeSaved(biz.id)}
+                        className="text-caption text-red-400 hover:text-red-600 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

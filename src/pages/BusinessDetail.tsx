@@ -2,13 +2,14 @@ import { useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import {
   MapPin, Phone, Globe, Clock, Star, ArrowLeft, ShieldCheck,
-  ExternalLink, MessageSquare, ChevronRight,
+  ExternalLink, MessageSquare, ChevronRight, Heart,
 } from "lucide-react"
 import { Button, Card, CardContent, Badge, HalalBadge, Rating } from "@/components/ui"
 import { GeometricPattern, SectionDivider } from "@/components/decorative"
 import { getBusinessById } from "@/data/businesses"
 import { useAuth } from "@/context/AuthContext"
 import { useToast } from "@/context/ToastContext"
+import { useSaved } from "@/hooks/useSaved"
 import { CATEGORY_LABELS, DISTRICT_LABELS } from "@/types"
 
 const mockReviews = [
@@ -49,6 +50,7 @@ function BusinessDetail() {
   const business = getBusinessById(id ?? "")
   const { user, isAuthenticated } = useAuth()
   const { success, info } = useToast()
+  const { isSaved, toggle: toggleSaved } = useSaved()
 
   const [reviewRating, setReviewRating] = useState(0)
   const [reviewComment, setReviewComment] = useState("")
@@ -139,13 +141,29 @@ function BusinessDetail() {
               </div>
             </div>
 
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2 text-body-sm text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  toggleSaved(business.id)
+                  isSaved(business.id) ? info("Removed from saved.") : success("Saved to your profile!")
+                }}
+                className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-body-sm font-medium transition-colors ${
+                  isSaved(business.id)
+                    ? "bg-red-500/20 text-red-200 hover:bg-red-500/30"
+                    : "bg-white/10 text-white hover:bg-white/20"
+                }`}
+              >
+                <Heart className={`h-4 w-4 ${isSaved(business.id) ? "fill-red-300" : ""}`} />
+                {isSaved(business.id) ? "Saved" : "Save"}
+              </button>
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2 text-body-sm text-white hover:bg-white/20"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </button>
+            </div>
           </div>
         </div>
       </section>
