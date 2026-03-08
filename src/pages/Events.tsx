@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { Calendar, MapPin, ExternalLink, Users } from "lucide-react"
 import { SearchBar, Badge, Card, CardContent, Button } from "@/components/ui"
 import { SectionDivider } from "@/components/decorative"
@@ -89,8 +89,15 @@ function EventCard({ event }: { event: HalalEvent }) {
 }
 
 function Events() {
-  const [search, setSearch] = useState("")
-  const [activeCategory, setActiveCategory] = useState(ALL)
+  const [searchParams] = useSearchParams()
+
+  const [search, setSearch] = useState(() => searchParams.get("q") ?? "")
+
+  const [activeCategory, setActiveCategory] = useState(() => {
+    const cat = searchParams.get("category")
+    if (!cat) return ALL
+    return categoryTabs.find((tab) => tab.toLowerCase() === cat.toLowerCase()) ?? ALL
+  })
 
   const filtered = useMemo(() => {
     const categoryKey = categoryMap[activeCategory]
@@ -120,6 +127,7 @@ function Events() {
             <SearchBar
               placeholder="Search events by name, location, or organiser..."
               onSearch={setSearch}
+              defaultValue={search}
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-2">

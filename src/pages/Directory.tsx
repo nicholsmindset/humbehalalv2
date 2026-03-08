@@ -1,10 +1,10 @@
 import { useState, useMemo } from "react"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { MapPin, Phone, Globe, Clock, Star } from "lucide-react"
 import { SearchBar, Badge, Card, CardContent, HalalBadge, Rating, Button } from "@/components/ui"
 import { SectionDivider } from "@/components/decorative"
 import { GeometricPattern } from "@/components/decorative"
-import type { Business, BusinessCategory } from "@/types"
+import type { Business, BusinessCategory, District } from "@/types"
 import { DISTRICT_LABELS, CATEGORY_LABELS } from "@/types"
 import { BUSINESSES } from "@/data/businesses"
 
@@ -88,8 +88,21 @@ function BusinessCard({ biz }: { biz: Business }) {
 }
 
 function Directory() {
-  const [search, setSearch] = useState("")
-  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES)
+  const [searchParams] = useSearchParams()
+
+  const [search, setSearch] = useState(() => {
+    const q = searchParams.get("q") ?? ""
+    const district = searchParams.get("district")
+    if (q) return q
+    if (district) return DISTRICT_LABELS[district as District] ?? ""
+    return ""
+  })
+
+  const [activeCategory, setActiveCategory] = useState(() => {
+    const cat = searchParams.get("category")
+    if (!cat) return ALL_CATEGORIES
+    return categoryTabs.find((tab) => categoryMap[tab] === cat) ?? ALL_CATEGORIES
+  })
 
   const filtered = useMemo(() => {
     const categoryKey = categoryMap[activeCategory]
@@ -128,6 +141,7 @@ function Directory() {
             <SearchBar
               placeholder="Search by name, cuisine, or location..."
               onSearch={setSearch}
+              defaultValue={search}
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
